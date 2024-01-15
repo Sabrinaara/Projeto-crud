@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nunes Sports - CRUD de Produtos</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f4f4f4;
+      width: 100%;
+    }
+
+    header {
+      background-color: #1a0ea2;
+      box-shadow: 5px 4px 5px #1d4c89a6;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      width: 100%;
+      margin-bottom: 100px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1200px;
+      height: 450px;
+      margin: 0 auto;
+    
+    }
+
+    #produtos {
+      width: 100%;
+      padding: 1rem;
+      box-sizing: border-box;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 8 5 10px rgba(0, 0, 0, 0.759);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #333;
+      color: white;
+    }
+
+    button {
+      padding: 0.3rem 0.5rem;
+      margin: 10px;
+      padding: 5px;
+      cursor: pointer;
+      border: none;
+      background-color: #1b0db8;
+      color: white;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #0a0169eb;
+    }
+
+
+    form{
+      background-color: #cecccc65;
+      font-size: large;
+      display: flex;
+      border-radius: 10px;
+      margin: 10px;
+      padding: 5px;
+     margin: 15px;
+    }
+
+    
+    .botao{
+      
+      height: 50px;
+    }
+
+    h2{
+      display: flex;
+      
+      justify-content: center;
+    }
+
+    
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1> Nunes Sports </h1>
+  </header>
+
+  <div id="produtos" class="container">
+    <button onclick="abrirFormulario()">Adicionar Produto</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Nome do Produto</th>
+          <th>ID</th>
+          <th>Descrição do Produto</th>
+          <th>Preço </th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="listaProdutos"></tbody>
+    </table>
+  </div>
+
+  <div id="formulario" class="container" style="display: none; margin-top: 20px;">
+    <h2>Adicionar Produto</h2>
+    <form id="formProduto">
+      <label for="nome">Nome do Produto:</label>
+      <input type="text" id="nome" name="nome" required>
+
+      <label for="codigo">Código do Produto:</label>
+      <input type="text" id="codigo" name="codigo" required>
+
+      <label for="descricao">Descrição do Produto:</label>
+      <textarea id="descricao" name="descricao" required></textarea>
+
+      <label for="preco">Preço do Produto:</label>
+      <input type="number" id="preco" name="preco" step="0.01" required>
+
+      <button class="botao" type="button" onclick="adicionarProduto()">Adicionar</button>
+      <button class="botao" type="button" onclick="fecharFormulario()">Cancelar</button>
+    </form>
+  </div>
+
+  <script>
+    const produtos = [
+      { nome: 'Camiseta Esportiva', codigo: 'CS123', descricao: 'Camiseta confortável para atividades físicas.', preco: 29.99 },
+      { nome: 'Tênis de Corrida', codigo: 'TC456', descricao: 'Tênis leve e amortecido para corridas.', preco: 99.99 },
+      { nome: 'Bola de Futebol', codigo: 'BF789', descricao: 'Bola oficial para partidas de futebol.', preco: 39.99 },
+    ];
+
+    function exibirProdutos() {
+      const listaProdutos = document.getElementById('listaProdutos');
+      listaProdutos.innerHTML = '';
+
+      produtos.forEach(produto => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${produto.nome}</td>
+          <td>${produto.codigo}</td>
+          <td>${produto.descricao}</
+            <td>${produto.descricao}</td>
+          <td>R$ ${produto.preco.toFixed(2)}</td>
+          <td>
+            <button onclick="editarProduto('${produto.nome}')">Editar</button>
+            <button onclick="removerProduto('${produto.nome}')">Excluir</button>
+          </td>
+        `;
+
+        listaProdutos.appendChild(row);
+      });
+    }
+
+    function abrirFormulario() {
+      document.getElementById('formulario').style.display = 'block';
+    }
+
+    function fecharFormulario() {
+      document.getElementById('formulario').style.display = 'none';
+    }
+
+    function adicionarProduto() {
+      const form = document.getElementById('formProduto');
+      const novoProduto = {
+        nome: form.nome.value,
+        codigo: form.codigo.value,
+        descricao: form.descricao.value,
+        preco: parseFloat(form.preco.value),
+      };
+
+      if (novoProduto.nome && novoProduto.codigo && novoProduto.descricao && !isNaN(novoProduto.preco) && novoProduto.preco > 0) {
+        produtos.push(novoProduto);
+        exibirProdutos();
+        fecharFormulario();
+        form.reset();
+      } else {
+        alert('Por favor, preencha todos os campos corretamente.');
+      }
+    }
+
+    function editarProduto(nome) {
+      const produtoSelecionado = produtos.find(produto => produto.nome === nome);
+
+      if (produtoSelecionado) {
+        const form = document.getElementById('formProduto');
+        form.nome.value = produtoSelecionado.nome;
+        form.codigo.value = produtoSelecionado.codigo;
+        form.descricao.value = produtoSelecionado.descricao;
+        form.preco.value = produtoSelecionado.preco.toFixed(2);
+
+        document.getElementById('formulario').style.display = 'block';
+      }
+    }
+
+    function removerProduto(nome) {
+      const index = produtos.findIndex(produto => produto.nome === nome);
+
+      if (index !== -1) {
+        produtos.splice(index, 1);
+        exibirProdutos();
+      }
+    }
+
+    exibirProdutos();
+  </script>
+</body>
+</html>
